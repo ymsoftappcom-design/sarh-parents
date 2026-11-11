@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>حضانة صرح - بوابة ولي الأمر</title>
   
-  <!-- ملفات PWA الرسمية -->
+  <!-- إعدادات تطبيق الويب التقدمي (PWA) -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0d9488">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2995/2995459.png">
 
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -25,7 +25,7 @@
 </head>
 <body class="bg-slate-100 min-h-screen p-3 flex justify-center items-start">
   
-  <!-- زر تنبيه التثبيت التلقائي -->
+  <!-- شريط تنبيه التثبيت التلقائي (PWA Banner) -->
   <div id="installBanner" class="hidden fixed bottom-4 left-4 right-4 max-w-md mx-auto bg-slate-900 text-white p-3.5 rounded-2xl shadow-xl flex items-center justify-between z-50 border border-slate-800">
     <div class="text-xs">
       <span class="font-bold block">تطبيق حضانة صرح</span>
@@ -34,7 +34,7 @@
     <button id="installBtn" class="bg-teal-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-teal-500 transition">تثبيت</button>
   </div>
 
-  <!-- شاشة تسجيل الدخول -->
+  <!-- 1. شاشة تسجيل الدخول -->
   <div id="loginCard" class="bg-white p-6 rounded-3xl shadow-sm w-full max-w-md text-center mt-12 border border-slate-200">
     <div class="w-16 h-16 bg-teal-50 text-teal-700 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 font-bold border border-teal-100">ص</div>
     <h1 class="text-2xl font-extrabold text-slate-800 mb-1">حضانة صرح</h1>
@@ -47,7 +47,7 @@
     <p id="err" class="text-red-500 text-xs mt-3 hidden"></p>
   </div>
 
-  <!-- لوحة متابعة الطفل بعد الدخول -->
+  <!-- 2. لوحة متابعة الطفل بعد تسجيل الدخول -->
   <div id="dashboard" class="hidden w-full max-w-md pb-8">
     
     <!-- بطاقة بيانات الطالب الشاملة -->
@@ -84,14 +84,14 @@
       <p id="feesDetail" class="text-xs text-slate-600 mt-1"></p>
     </div>
 
-    <!-- أزرار التبويبات -->
+    <!-- أزرار التبويبات الثلاثية -->
     <div class="bg-slate-200/70 p-1 rounded-2xl flex gap-1 mb-3">
       <button id="tabDailyBtn" onclick="switchTab('daily')" class="tab-btn active flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 transition">التقرير اليومي</button>
       <button id="tabWeeklyBtn" onclick="switchTab('weekly')" class="tab-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 transition">التقرير الأسبوعي</button>
       <button id="tabMonthlyBtn" onclick="switchTab('monthly')" class="tab-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 transition">التقرير الشهري</button>
     </div>
 
-    <!-- التقرير اليومي -->
+    <!-- محتوى التقرير اليومي -->
     <div id="dailyTab" class="space-y-3">
       <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200">
         <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
@@ -109,7 +109,7 @@
       </div>
     </div>
 
-    <!-- التقرير الأسبوعي -->
+    <!-- محتوى التقرير الأسبوعي -->
     <div id="weeklyTab" class="hidden space-y-3">
       <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200">
         <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
@@ -133,7 +133,7 @@
       </div>
     </div>
 
-    <!-- التقرير الشهري -->
+    <!-- محتوى التقرير الشهري -->
     <div id="monthlyTab" class="hidden space-y-3">
       <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200">
         <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
@@ -157,19 +157,20 @@
       </div>
     </div>
 
+    <!-- زر تسجيل الخروج -->
     <button onclick="location.reload()" class="w-full mt-4 bg-slate-200 text-slate-600 py-3 rounded-2xl text-xs font-bold hover:bg-slate-300 transition">تسجيل الخروج</button>
   </div>
 
   <script>
     // رابط Google Apps Script الخاص بك
-    const API_URL = "https://script.google.com/macros/s/AKfycbwpEK7FDN_MYmtxeGvGEkuMU0C7OFlHadcciSEHbdyYVZ03VAWuV4SxCv6Y-LfWoyFh/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwrzM698S0hIgVLJqkRslNEySjfLX268IlHW0k0y0ot23TgAjAbSE2GV4uUzGIq2tOf/exec";
 
-    // تفعيل الـ Service Worker لمتطلبات التثبيت
+    // تفعيل الـ Service Worker لمتطلبات الـ PWA
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js').catch(console.error);
     }
 
-    // التعامل مع تنبيه تثبيت التطبيق PWA
+    // التعامل مع تنبيه تثبيت التطبيق على الشاشة الرئيسية
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -208,19 +209,32 @@
 
       try {
         const query = `${API_URL}?action=login&phone=${encodeURIComponent(phone)}&pin=${encodeURIComponent(pin)}`;
-        const res = await fetch(query);
-        const data = await res.json();
+        
+        const res = await fetch(query, {
+          method: 'GET',
+          redirect: 'follow'
+        });
+
+        const textData = await res.text();
+        let data;
+        try {
+          data = JSON.parse(textData);
+        } catch (parseError) {
+          throw new Error("استجابة السيرفر غير مطابقة، يرجى التأكد من نشر نسخة جديدة في جوجل.");
+        }
 
         btn.disabled = false;
         if (data.success) {
           document.getElementById('loginCard').classList.add('hidden');
           document.getElementById('dashboard').classList.remove('hidden');
 
+          // تعبئة بطاقة الطالب
           document.getElementById('childName').innerText = data.child.name;
           document.getElementById('childCode').innerText = "#" + data.child.id;
           document.getElementById('parentPhone').innerText = data.child.phone;
           document.getElementById('childStatus').innerText = data.daily.status;
 
+          // تهيئة بطاقة المصروفات
           const feesCard = document.getElementById('feesCard');
           const feesBadge = document.getElementById('feesBadge');
           const feesDetail = document.getElementById('feesDetail');
@@ -237,15 +251,18 @@
             feesDetail.innerText = "لا توجد أي متأخرات مالية مطلوبة حالياً.";
           }
 
+          // تعبئة بيانات التقرير اليومي
           document.getElementById('checkInTime').innerText = data.daily.checkIn;
           document.getElementById('homework').innerText = data.daily.homework;
           document.getElementById('dailyNotes').innerText = data.daily.notes;
 
+          // تعبئة بيانات التقرير الأسبوعي
           document.getElementById('weekTitle').innerText = data.weekly.week;
           document.getElementById('weekAchievements').innerText = data.weekly.achievements;
           document.getElementById('weekBehavior').innerText = data.weekly.behavior;
           document.getElementById('weekRecommendation').innerText = data.weekly.recommendation;
 
+          // تعبئة بيانات التقرير الشهري
           document.getElementById('monthTitle').innerText = data.monthly.month;
           document.getElementById('monthGrade').innerText = data.monthly.grade;
           document.getElementById('monthSocial').innerText = data.monthly.social;
@@ -259,10 +276,11 @@
         btn.disabled = false;
         err.classList.remove('text-teal-600');
         err.classList.add('text-red-500');
-        err.innerText = "تعذر الاتصال، يرجى مراجعة اتصال الإنترنت.";
+        err.innerText = e.message || "تعذر الاتصال، يرجى مراجعة اتصال الإنترنت.";
       }
     }
 
+    // التبديل بين التبويبات
     function switchTab(tab) {
       ['daily', 'weekly', 'monthly'].forEach(t => {
         document.getElementById(t + 'Tab').classList.add('hidden');
