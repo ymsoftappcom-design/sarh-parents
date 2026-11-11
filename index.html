@@ -395,14 +395,14 @@
         btn.disabled = false;
         if (data.success) {
           
-          // ربط هاتف ولي الأمر بمعرف الطفل وتأكيد الاشتراك الفوري
+// ربط هاتف ولي الأمر وتوليد الـ Push Token فوراً عند الضغط
           if (window.OneSignalDeferred) {
             window.OneSignalDeferred.push(async function(OneSignal) {
               try {
+                // طلب الإذن وتوليد التوكن كإجراء ناتج عن ضغطة المستخدم
+                await OneSignal.Notifications.requestPermission();
                 await OneSignal.login("child_" + String(data.child.id).trim());
-                if (OneSignal.User && OneSignal.User.PushSubscription) {
-                  await OneSignal.User.PushSubscription.optIn();
-                }
+                await OneSignal.User.PushSubscription.optIn();
               } catch (pushErr) {
                 console.warn("OneSignal Login Error:", pushErr);
               }
