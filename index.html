@@ -3,78 +3,198 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>حضانة صرح - بوابة ولي الأمر</title>
+  <title>صرح لإدارة الحضانات التعليمية - بوابة ولي الأمر</title>
   
+  <!-- إعدادات تطبيق الويب التقدمي (PWA) -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0d9488">
+  <meta name="theme-color" content="#4f46e5">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2995/2995459.png">
 
+  <!-- خط Cairo والتصميم عبر Tailwind CSS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  
   <style>
-    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { font-family: 'Cairo', system-ui, sans-serif; }
     .tab-btn.active {
-      background-color: #0d9488;
+      background-color: #4f46e5;
       color: white;
-      box-shadow: 0 4px 6px -1px rgb(13 148 136 / 0.25);
+      box-shadow: 0 4px 10px -2px rgba(79, 70, 229, 0.35);
     }
   </style>
 </head>
-<body class="bg-slate-100 min-h-screen p-3 flex justify-center items-start">
-  
-  <!-- تنبيه تثبيت التطبيق PWA -->
+<body class="bg-[#f8fafc] min-h-screen p-4 flex flex-col items-center justify-center text-slate-800">
+
+  <!-- شريط تثبيت PWA -->
   <div id="installBanner" class="hidden fixed bottom-4 left-4 right-4 max-w-md mx-auto bg-slate-900 text-white p-3.5 rounded-2xl shadow-xl flex items-center justify-between z-50 border border-slate-800">
     <div class="text-xs">
       <span class="font-bold block">تطبيق حضانة صرح</span>
       <span class="text-slate-400 text-[11px]">تثبيت التطبيق على الشاشة للوصول السريع</span>
     </div>
-    <button id="installBtn" class="bg-teal-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-teal-500 transition">تثبيت</button>
+    <button id="installBtn" class="bg-indigo-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-indigo-500 transition">تثبيت</button>
   </div>
 
-  <!-- 1. شاشة تسجيل الدخول -->
-  <div id="loginCard" class="bg-white p-6 rounded-3xl shadow-sm w-full max-w-md text-center mt-10 border border-slate-200">
-    <div class="w-16 h-16 bg-teal-50 text-teal-700 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 font-bold border border-teal-100">ص</div>
-    <h1 class="text-2xl font-extrabold text-slate-800 mb-1">حضانة صرح</h1>
-    <p class="text-xs text-slate-500 mb-6">بوابة أولياء الأمور لمتابعة الطفل</p>
+  <!-- 1. شاشة تسجيل الدخول المطابقة للتصميم -->
+  <div id="loginCard" class="w-full max-w-[420px] flex flex-col items-center my-auto">
     
-    <input id="phone" type="tel" placeholder="رقم الهاتف المسجل" class="w-full mb-3 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-teal-600 focus:bg-white text-center text-base transition">
-    <input id="pin" type="password" placeholder="الرمز السري (PIN)" class="w-full mb-3 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-teal-600 focus:bg-white text-center text-base transition">
-    
-    <!-- خيار حفظ بيانات تسجيل الدخول -->
-    <div class="flex items-center justify-start gap-2 mb-5 px-1">
-      <input id="rememberMe" type="checkbox" checked class="w-4 h-4 accent-teal-600 rounded cursor-pointer">
-      <label for="rememberMe" class="text-xs text-slate-600 select-none cursor-pointer">تذكر بيانات الدخول على هذا الجهاز</label>
+    <!-- الشعار والعنوان العلوي -->
+    <div class="text-center mb-6">
+      <div class="w-20 h-20 mx-auto mb-2 flex items-center justify-center">
+        <!-- أيقونة الشعار الملونة -->
+        <svg viewBox="0 0 100 100" class="w-16 h-16 drop-shadow-sm">
+          <circle cx="50" cy="50" r="42" fill="#eff6ff" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="6 4"/>
+          <path d="M35 60 C35 45, 65 45, 65 60" fill="none" stroke="#f97316" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="38" cy="38" r="8" fill="#38bdf8"/>
+          <circle cx="62" cy="38" r="8" fill="#ec4899"/>
+          <path d="M50 48 Q55 58 62 58" fill="none" stroke="#22c55e" stroke-width="4" stroke-linecap="round"/>
+          <text x="50" y="76" font-family="'Cairo', sans-serif" font-size="14" font-weight="900" fill="#2e2978" text-anchor="middle">صرح</text>
+        </svg>
+      </div>
+      <h2 class="text-xl font-extrabold text-[#232066] tracking-tight">صرح لإدارة الحضانات التعليمية</h2>
     </div>
 
-    <button id="submitBtn" onclick="handleLogin()" class="w-full bg-teal-600 text-white py-3.5 rounded-2xl font-bold shadow-md shadow-teal-600/20 hover:bg-teal-700 active:scale-[0.98] transition">تسجيل الدخول</button>
-    <p id="err" class="text-red-500 text-xs mt-3 hidden"></p>
+    <!-- كارت تسجيل الدخول مع الاستيكرات الطافية -->
+    <div class="relative w-full bg-white rounded-[32px] p-7 md:p-8 shadow-[0_15px_40px_-15px_rgba(46,41,120,0.12)] border border-slate-100">
+      
+      <!-- استيكر القلم (أعلى اليمين) -->
+      <div class="absolute -top-3.5 -right-3 w-10 h-10 bg-[#fffbeb] border-2 border-[#fef08a] rounded-2xl flex items-center justify-center text-base shadow-sm rotate-12 select-none pointer-events-none">
+        ✏️
+      </div>
+
+      <!-- استيكر القلب الأحمر (أعلى اليسار) -->
+      <div class="absolute -top-3.5 -left-3 w-10 h-10 bg-[#fff1f2] border-2 border-[#fecdd3] rounded-full flex items-center justify-center text-sm shadow-sm -rotate-12 select-none pointer-events-none">
+        ❤️
+      </div>
+
+      <!-- استيكر النجمة الصفراء (الجانب الأيمن) -->
+      <div class="absolute top-[48%] -right-4 w-9 h-9 bg-[#fefce8] border border-[#fef08a] rounded-full flex items-center justify-center text-sm shadow-sm rotate-6 select-none pointer-events-none">
+        ⭐
+      </div>
+
+      <!-- استيكر القلم الأزرق (الجانب الأيسر) -->
+      <div class="absolute top-[35%] -left-4 w-9 h-9 bg-[#f0f9ff] border border-[#bae6fd] rounded-2xl flex items-center justify-center text-xs shadow-sm -rotate-6 select-none pointer-events-none">
+        🖊️
+      </div>
+
+      <!-- استيكر القلب الأزرق (أسفل اليمين) -->
+      <div class="absolute -bottom-3 -right-3 w-9 h-9 bg-[#f0f9ff] border-2 border-[#bae6fd] rounded-full flex items-center justify-center text-xs shadow-sm rotate-12 select-none pointer-events-none">
+        🩵
+      </div>
+
+      <!-- استيكر القلب البرتقالي (أسفل اليسار) -->
+      <div class="absolute -bottom-3 -left-3 w-9 h-9 bg-[#fff7ed] border-2 border-[#fed7aa] rounded-full flex items-center justify-center text-xs shadow-sm -rotate-12 select-none pointer-events-none">
+        🧡
+      </div>
+
+      <!-- نصوص الترحيب -->
+      <div class="text-center mb-6">
+        <h1 class="text-2xl font-black text-[#1e1b4b] mb-1.5">يرجى تسجيل الدخول للمتابعة</h1>
+        <p class="text-xs font-semibold text-slate-400">ادخل بيانات حسابك اسم المستخدم وكلمة المرور</p>
+      </div>
+
+      <!-- حقول الإدخال -->
+      <div class="space-y-4">
+        
+        <!-- حقل اسم المستخدم / رقم الهاتف -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5 text-right">رقم هاتف ولي الأمر أو الحساب</label>
+          <div class="relative flex items-center bg-[#f8fafc] border border-slate-200/90 rounded-2xl focus-within:border-indigo-600 focus-within:bg-white transition-all">
+            <input id="phone" type="tel" placeholder="رقم الهاتف المسجل" class="w-full py-3.5 pr-4 pl-11 bg-transparent text-sm font-semibold outline-none text-slate-800 placeholder:text-slate-400">
+            <div class="absolute left-3.5 text-slate-400 pointer-events-none">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- حقل كلمة المرور / الرمز السري -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5 text-right">كلمة المرور (PIN)</label>
+          <div class="relative flex items-center bg-[#f8fafc] border border-slate-200/90 rounded-2xl focus-within:border-indigo-600 focus-within:bg-white transition-all">
+            <input id="pin" type="password" placeholder="الرمز السري الخاص بك" class="w-full py-3.5 pr-4 pl-20 bg-transparent text-sm font-semibold outline-none text-slate-800 placeholder:text-slate-400 font-mono">
+            
+            <div class="absolute left-3 flex items-center gap-2">
+              <!-- زر إظهار وإخفاء كلمة المرور -->
+              <button type="button" onclick="togglePasswordVisibility()" class="text-slate-400 hover:text-slate-600 transition p-1">
+                <svg id="eyeIcon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              </button>
+              <!-- أيقونة القفل -->
+              <span class="text-slate-300">|</span>
+              <div class="text-slate-400 pointer-events-none">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- تذكرني + نسيت كلمة المرور -->
+        <div class="flex items-center justify-between text-xs pt-1">
+          <label class="flex items-center gap-2 cursor-pointer select-none text-slate-600 font-medium">
+            <input id="rememberMe" type="checkbox" checked class="w-4 h-4 accent-indigo-600 rounded cursor-pointer">
+            <span>تذكرني</span>
+          </label>
+          <a href="https://wa.me/201007692368" target="_blank" class="text-slate-400 hover:text-indigo-600 font-semibold transition">نسيت كلمة المرور؟</a>
+        </div>
+
+        <!-- زر تسجيل الدخول المطابق للرسم -->
+        <button id="submitBtn" onclick="handleLogin()" class="w-full mt-2 bg-gradient-to-r from-[#5046e5] to-[#4338ca] hover:from-[#4338ca] hover:to-[#3730a3] text-white py-3.5 rounded-2xl font-extrabold text-sm shadow-[0_10px_25px_-5px_rgba(79,70,229,0.4)] flex items-center justify-center gap-2 active:scale-[0.98] transition">
+          <span>تسجيل الدخول</span>
+          <svg class="w-4 h-4 rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </button>
+
+        <!-- رسائل الخطأ والتنبيه -->
+        <p id="err" class="text-rose-500 text-xs font-bold text-center mt-2 hidden"></p>
+
+      </div>
+    </div>
+
+    <!-- الفوتر السفلي -->
+    <div class="mt-6 text-center">
+      <a href="https://wa.me/201007692368" target="_blank" class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-indigo-700 font-bold transition">
+        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>تواجه مشكلة؟ تواصل مع إدارة الحضانة</span>
+      </a>
+    </div>
   </div>
 
-  <!-- 2. لوحة متابعة الطفل بعد الدخول -->
+  <!-- 2. لوحة متابعة الطفل بعد تسجيل الدخول -->
   <div id="dashboard" class="hidden w-full max-w-md pb-8">
     
     <!-- بطاقة الطالب -->
     <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200 mb-3">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
         <div class="flex items-center gap-3">
-          <div class="w-12 h-12 bg-teal-600 text-white rounded-2xl flex items-center justify-center font-bold text-lg shadow-sm shadow-teal-600/20">👶</div>
+          <div class="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center font-bold text-lg shadow-sm shadow-indigo-600/20">👶</div>
           <div>
-            <span class="text-[11px] text-slate-400 font-medium block">ملف الطفل</span>
+            <span class="text-[11px] text-slate-400 font-bold block">ملف الطفل</span>
             <h2 id="childName" class="text-base font-extrabold text-slate-800"></h2>
           </div>
         </div>
-        <span id="childStatus" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-teal-50 text-teal-700 border border-teal-100"></span>
+        <span id="childStatus" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-100"></span>
       </div>
 
       <div class="grid grid-cols-2 gap-2 text-xs">
         <div class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
-          <span class="text-slate-400 block text-[10px] mb-0.5 font-medium">كود الطالب:</span>
-          <span id="childCode" class="font-bold text-teal-800 font-mono text-sm"></span>
+          <span class="text-slate-400 block text-[10px] mb-0.5 font-bold">كود الطالب:</span>
+          <span id="childCode" class="font-extrabold text-indigo-800 font-mono text-sm"></span>
         </div>
         <div class="bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
-          <span class="text-slate-400 block text-[10px] mb-0.5 font-medium">هاتف ولي الأمر:</span>
-          <span id="parentPhone" class="font-bold text-slate-700 font-mono text-xs"></span>
+          <span class="text-slate-400 block text-[10px] mb-0.5 font-bold">هاتف ولي الأمر:</span>
+          <span id="parentPhone" class="font-extrabold text-slate-700 font-mono text-xs"></span>
         </div>
       </div>
     </div>
@@ -100,7 +220,7 @@
     <div id="dailyTab" class="space-y-3">
       <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200 space-y-3">
         
-        <!-- وقت الحضور والانصراف جنباً إلى جنب -->
+        <!-- وقت الحضور والانصراف -->
         <div class="grid grid-cols-2 gap-2">
           <div class="bg-emerald-50/70 border border-emerald-100 p-3 rounded-2xl text-center">
             <span class="text-[11px] text-emerald-800 font-bold block mb-0.5">🕒 وقت الحضور</span>
@@ -121,7 +241,7 @@
         <!-- ملاحظات الرعاية والوجبات -->
         <div>
           <span class="text-xs font-bold text-slate-700 block mb-1">🌟 تقرير وملاحظات اليوم:</span>
-          <p id="dailyNotes" class="text-xs bg-teal-50/50 p-3 rounded-2xl border border-teal-100 text-teal-900 leading-relaxed"></p>
+          <p id="dailyNotes" class="text-xs bg-indigo-50/50 p-3 rounded-2xl border border-indigo-100 text-indigo-950 leading-relaxed"></p>
         </div>
       </div>
     </div>
@@ -131,7 +251,7 @@
       <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200">
         <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
           <span class="text-xs font-bold text-slate-700">📅 ملخص الأسبوع</span>
-          <span id="weekTitle" class="text-xs font-semibold text-teal-700"></span>
+          <span id="weekTitle" class="text-xs font-semibold text-indigo-700"></span>
         </div>
         <div class="space-y-3">
           <div>
@@ -143,7 +263,7 @@
             <p id="weekBehavior" class="text-xs bg-slate-50 p-3 rounded-2xl border border-slate-100 text-slate-700 leading-relaxed"></p>
           </div>
           <div>
-            <span class="text-xs font-bold text-teal-800 block mb-1">💡 توصيات لمعلمة الفصل للمنزل:</span>
+            <span class="text-xs font-bold text-indigo-900 block mb-1">💡 توصيات لمعلمة الفصل للمنزل:</span>
             <p id="weekRecommendation" class="text-xs bg-amber-50 p-3 rounded-2xl border border-amber-100 text-amber-900 leading-relaxed"></p>
           </div>
         </div>
@@ -155,29 +275,29 @@
       <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200 space-y-3">
         <div class="flex items-center justify-between border-b border-slate-100 pb-2">
           <span class="text-xs font-bold text-slate-700">📊 إحصائيات الشهر</span>
-          <span id="monthTitle" class="text-xs font-semibold text-teal-700"></span>
+          <span id="monthTitle" class="text-xs font-semibold text-indigo-700"></span>
         </div>
 
         <!-- 3 بطاقات إحصائية: أيام الحضور، الغياب، وإجمالي الساعات -->
         <div class="grid grid-cols-3 gap-2">
           <div class="bg-emerald-50 border border-emerald-100 p-2.5 rounded-2xl text-center">
-            <span class="text-[10px] text-emerald-700 block mb-0.5">أيام الحضور</span>
+            <span class="text-[10px] text-emerald-700 block mb-0.5 font-bold">أيام الحضور</span>
             <span id="monthAttended" class="text-xs font-extrabold text-emerald-900"></span>
           </div>
           <div class="bg-rose-50 border border-rose-100 p-2.5 rounded-2xl text-center">
-            <span class="text-[10px] text-rose-700 block mb-0.5">أيام الغياب</span>
+            <span class="text-[10px] text-rose-700 block mb-0.5 font-bold">أيام الغياب</span>
             <span id="monthAbsent" class="text-xs font-extrabold text-rose-900"></span>
           </div>
-          <div class="bg-sky-50 border border-sky-100 p-2.5 rounded-2xl text-center">
-            <span class="text-[10px] text-sky-700 block mb-0.5">ساعات التواجد</span>
-            <span id="monthHours" class="text-xs font-extrabold text-sky-900"></span>
+          <div class="bg-indigo-50 border border-indigo-100 p-2.5 rounded-2xl text-center">
+            <span class="text-[10px] text-indigo-700 block mb-0.5 font-bold">ساعات التواجد</span>
+            <span id="monthHours" class="text-xs font-extrabold text-indigo-900"></span>
           </div>
         </div>
 
         <div class="space-y-3 pt-1">
           <div class="flex items-center justify-between bg-slate-50 p-3 rounded-2xl border border-slate-100">
             <span class="text-xs font-bold text-slate-700">التقدير الأكاديمي والمهاري:</span>
-            <span id="monthGrade" class="text-xs font-extrabold text-teal-700 bg-teal-100 px-3 py-1 rounded-xl"></span>
+            <span id="monthGrade" class="text-xs font-extrabold text-indigo-700 bg-indigo-100 px-3 py-1 rounded-xl"></span>
           </div>
           <div>
             <span class="text-xs font-bold text-slate-700 block mb-1">🌱 التطور السلوكي والبدني:</span>
@@ -185,7 +305,7 @@
           </div>
           <div>
             <span class="text-xs font-bold text-slate-700 block mb-1">📋 التقرير الشامل لإدارة الحضانة:</span>
-            <p id="monthEvaluation" class="text-xs bg-teal-50/50 p-3 rounded-2xl border border-teal-100 text-teal-900 leading-relaxed"></p>
+            <p id="monthEvaluation" class="text-xs bg-indigo-50/50 p-3 rounded-2xl border border-indigo-100 text-indigo-950 leading-relaxed"></p>
           </div>
         </div>
       </div>
@@ -197,9 +317,7 @@
         <h3 class="text-xs font-bold text-slate-800 mb-3 flex items-center gap-1.5">
           🎨 الأنشطة المشترك فيها والفعاليات القادمة
         </h3>
-        <div id="activitiesList" class="space-y-2.5">
-          <!-- تملأ برمجياً عبر الـ JavaScript -->
-        </div>
+        <div id="activitiesList" class="space-y-2.5"></div>
       </div>
     </div>
 
@@ -208,14 +326,24 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxz7PLPBoQ3iFQ359ljLk2rIU4PS6vMtx0a2oQeBrPFHN1DzJyyD7LBDSOyhSapnCGA/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwrzM698S0hIgVLJqkRslNEySjfLX268IlHW0k0y0ot23TgAjAbSE2GV4uUzGIq2tOf/exec";
 
-    // تفعيل الـ Service Worker لمتطلبات PWA
+    // تفعيل Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js').catch(console.error);
     }
 
-    // استرجاع بيانات تسجيل الدخول المحفوظة تلقائياً عند فتح الصفحة
+    // إظهار وإخفاء كلمة المرور
+    function togglePasswordVisibility() {
+      const pinInput = document.getElementById('pin');
+      if (pinInput.type === 'password') {
+        pinInput.type = 'text';
+      } else {
+        pinInput.type = 'password';
+      }
+    }
+
+    // استرجاع البيانات المحفوظة تلقائياً
     window.addEventListener('DOMContentLoaded', () => {
       const savedPhone = localStorage.getItem('sarh_saved_phone');
       const savedPin = localStorage.getItem('sarh_saved_pin');
@@ -226,7 +354,7 @@
       }
     });
 
-    // التعامل مع شريط تثبيت التطبيق
+    // PWA Install prompt
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -245,7 +373,7 @@
       }
     });
 
-    // تسجيل الدخول وجلب البيانات
+    // تنفيذ تسجيل الدخول
     async function handleLogin() {
       const phone = document.getElementById('phone').value.trim();
       const pin = document.getElementById('pin').value.trim();
@@ -259,9 +387,9 @@
         return;
       }
 
-      err.innerText = "جاري الاتصال بقاعدة البيانات...";
-      err.classList.remove('hidden', 'text-red-500');
-      err.classList.add('text-teal-600');
+      err.innerText = "جاري التحقق من الحساب...";
+      err.classList.remove('hidden', 'text-rose-500');
+      err.classList.add('text-indigo-600');
       btn.disabled = true;
 
       try {
@@ -273,12 +401,11 @@
         try {
           data = JSON.parse(textData);
         } catch (parseError) {
-          throw new Error("استجابة السيرفر غير مطابقة، يرجى التأكد من نشر نسخة جديدة في جوجل.");
+          throw new Error("استجابة الخادم غير متوافقة حالياً.");
         }
 
         btn.disabled = false;
         if (data.success) {
-          // حفظ أو حذف بيانات الدخول حسب اختيار المستخدم
           if (rememberMe) {
             localStorage.setItem('sarh_saved_phone', phone);
             localStorage.setItem('sarh_saved_pin', pin);
@@ -290,13 +417,11 @@
           document.getElementById('loginCard').classList.add('hidden');
           document.getElementById('dashboard').classList.remove('hidden');
 
-          // تعبئة بطاقة الطالب
           document.getElementById('childName').innerText = data.child.name;
           document.getElementById('childCode').innerText = "#" + data.child.id;
           document.getElementById('parentPhone').innerText = data.child.phone;
           document.getElementById('childStatus').innerText = data.daily.status;
 
-          // تهيئة بطاقة المصروفات
           const feesCard = document.getElementById('feesCard');
           const feesBadge = document.getElementById('feesBadge');
           const feesDetail = document.getElementById('feesDetail');
@@ -312,19 +437,16 @@
             feesDetail.innerText = "لا توجد أي متأخرات مالية مطلوبة حالياً.";
           }
 
-          // تعبئة التقرير اليومي
           document.getElementById('checkInTime').innerText = data.daily.checkIn;
           document.getElementById('checkOutTime').innerText = data.daily.checkOut;
           document.getElementById('tasks').innerText = data.daily.tasks;
           document.getElementById('dailyNotes').innerText = data.daily.notes;
 
-          // تعبئة التقرير الأسبوعي
           document.getElementById('weekTitle').innerText = data.weekly.week;
           document.getElementById('weekAchievements').innerText = data.weekly.achievements;
           document.getElementById('weekBehavior').innerText = data.weekly.behavior;
           document.getElementById('weekRecommendation').innerText = data.weekly.recommendation;
 
-          // تعبئة التقرير الشهري وإحصائيات الحضور
           document.getElementById('monthTitle').innerText = data.monthly.month;
           document.getElementById('monthAttended').innerText = data.monthly.attendedDays;
           document.getElementById('monthAbsent').innerText = data.monthly.absentDays;
@@ -333,7 +455,6 @@
           document.getElementById('monthSocial').innerText = data.monthly.social;
           document.getElementById('monthEvaluation').innerText = data.monthly.evaluation;
 
-          // تعبئة الأنشطة والفعاليات
           const activitiesContainer = document.getElementById('activitiesList');
           activitiesContainer.innerHTML = '';
           if (data.activities && data.activities.length > 0) {
@@ -343,9 +464,9 @@
               card.innerHTML = `
                 <div class="flex items-center justify-between">
                   <span class="font-bold text-slate-800 text-xs">${act.title}</span>
-                  <span class="text-[10px] px-2 py-0.5 rounded-md font-bold bg-teal-100 text-teal-800">${act.status}</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded-md font-bold bg-indigo-100 text-indigo-800">${act.status}</span>
                 </div>
-                <div class="text-[11px] text-teal-700 font-medium">${act.category}</div>
+                <div class="text-[11px] text-indigo-700 font-medium">${act.category}</div>
                 <p class="text-[11px] text-slate-600 leading-relaxed">${act.details}</p>
               `;
               activitiesContainer.appendChild(card);
@@ -355,19 +476,18 @@
           }
 
         } else {
-          err.classList.remove('text-teal-600');
-          err.classList.add('text-red-500');
+          err.classList.remove('text-indigo-600');
+          err.classList.add('text-rose-500');
           err.innerText = data.message;
         }
       } catch (e) {
         btn.disabled = false;
-        err.classList.remove('text-teal-600');
-        err.classList.add('text-red-500');
+        err.classList.remove('text-indigo-600');
+        err.classList.add('text-rose-500');
         err.innerText = e.message || "تعذر الاتصال، يرجى مراجعة اتصال الإنترنت.";
       }
     }
 
-    // التنقل بين التبويبات الأربعة
     function switchTab(tab) {
       ['daily', 'weekly', 'monthly', 'activities'].forEach(t => {
         document.getElementById(t + 'Tab').classList.add('hidden');
@@ -378,7 +498,6 @@
       document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1) + 'Btn').classList.add('active');
     }
 
-    // تسجيل الخروج
     function handleLogout() {
       location.reload();
     }
