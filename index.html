@@ -18,7 +18,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- OneSignal Web Push SDK المربوط بحسابك -->
+<!-- OneSignal Web Push SDK المطور لإجبار طلب الإذن -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -28,6 +28,9 @@
         serviceWorkerParam: { scope: "./" },
         serviceWorkerPath: "OneSignalSDKWorker.js"
       });
+
+      // إظهار نافذة طلب السماح بالإشعارات تلقائياً
+      await OneSignal.Notifications.requestPermission();
     });
   </script>
   
