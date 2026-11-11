@@ -5,27 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>حضانة صرح - بوابة ولي الأمر</title>
   
-  <!-- إعدادات تطبيق الويب التقدمي (PWA) -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0d9488">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2995/2995459.png">
 
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     .tab-btn.active {
       background-color: #0d9488;
       color: white;
-      box-shadow: 0 4px 6px -1px rgb(13 148 136 / 0.2);
+      box-shadow: 0 4px 6px -1px rgb(13 148 136 / 0.25);
     }
   </style>
 </head>
 <body class="bg-slate-100 min-h-screen p-3 flex justify-center items-start">
   
-  <!-- شريط تنبيه التثبيت التلقائي (PWA Banner) -->
+  <!-- تنبيه تثبيت التطبيق PWA -->
   <div id="installBanner" class="hidden fixed bottom-4 left-4 right-4 max-w-md mx-auto bg-slate-900 text-white p-3.5 rounded-2xl shadow-xl flex items-center justify-between z-50 border border-slate-800">
     <div class="text-xs">
       <span class="font-bold block">تطبيق حضانة صرح</span>
@@ -35,22 +33,28 @@
   </div>
 
   <!-- 1. شاشة تسجيل الدخول -->
-  <div id="loginCard" class="bg-white p-6 rounded-3xl shadow-sm w-full max-w-md text-center mt-12 border border-slate-200">
+  <div id="loginCard" class="bg-white p-6 rounded-3xl shadow-sm w-full max-w-md text-center mt-10 border border-slate-200">
     <div class="w-16 h-16 bg-teal-50 text-teal-700 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 font-bold border border-teal-100">ص</div>
     <h1 class="text-2xl font-extrabold text-slate-800 mb-1">حضانة صرح</h1>
     <p class="text-xs text-slate-500 mb-6">بوابة أولياء الأمور لمتابعة الطفل</p>
     
     <input id="phone" type="tel" placeholder="رقم الهاتف المسجل" class="w-full mb-3 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-teal-600 focus:bg-white text-center text-base transition">
-    <input id="pin" type="password" placeholder="الرمز السري (PIN)" class="w-full mb-5 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-teal-600 focus:bg-white text-center text-base transition">
+    <input id="pin" type="password" placeholder="الرمز السري (PIN)" class="w-full mb-3 p-3.5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-teal-600 focus:bg-white text-center text-base transition">
     
+    <!-- خيار حفظ بيانات تسجيل الدخول -->
+    <div class="flex items-center justify-start gap-2 mb-5 px-1">
+      <input id="rememberMe" type="checkbox" checked class="w-4 h-4 accent-teal-600 rounded cursor-pointer">
+      <label for="rememberMe" class="text-xs text-slate-600 select-none cursor-pointer">تذكر بيانات الدخول على هذا الجهاز</label>
+    </div>
+
     <button id="submitBtn" onclick="handleLogin()" class="w-full bg-teal-600 text-white py-3.5 rounded-2xl font-bold shadow-md shadow-teal-600/20 hover:bg-teal-700 active:scale-[0.98] transition">تسجيل الدخول</button>
     <p id="err" class="text-red-500 text-xs mt-3 hidden"></p>
   </div>
 
-  <!-- 2. لوحة متابعة الطفل بعد تسجيل الدخول -->
+  <!-- 2. لوحة متابعة الطفل بعد الدخول -->
   <div id="dashboard" class="hidden w-full max-w-md pb-8">
     
-    <!-- بطاقة بيانات الطالب الشاملة -->
+    <!-- بطاقة الطالب -->
     <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200 mb-3">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
         <div class="flex items-center gap-3">
@@ -75,7 +79,7 @@
       </div>
     </div>
 
-    <!-- بطاقة المصروفات المطلوب سدادها -->
+    <!-- بطاقة المصروفات -->
     <div id="feesCard" class="p-4 rounded-3xl mb-3 border transition-all">
       <div class="flex items-center justify-between mb-1">
         <span class="text-xs font-bold flex items-center gap-1.5" id="feesTitle">💳 المصروفات والرسوم</span>
@@ -84,32 +88,45 @@
       <p id="feesDetail" class="text-xs text-slate-600 mt-1"></p>
     </div>
 
-    <!-- أزرار التبويبات الثلاثية -->
-    <div class="bg-slate-200/70 p-1 rounded-2xl flex gap-1 mb-3">
-      <button id="tabDailyBtn" onclick="switchTab('daily')" class="tab-btn active flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 transition">التقرير اليومي</button>
-      <button id="tabWeeklyBtn" onclick="switchTab('weekly')" class="tab-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 transition">التقرير الأسبوعي</button>
-      <button id="tabMonthlyBtn" onclick="switchTab('monthly')" class="tab-btn flex-1 py-2 rounded-xl text-xs font-bold text-slate-600 transition">التقرير الشهري</button>
+    <!-- أزرار التبويبات الأربعة السلسة -->
+    <div class="bg-slate-200/70 p-1 rounded-2xl grid grid-cols-4 gap-1 mb-3">
+      <button id="tabDailyBtn" onclick="switchTab('daily')" class="tab-btn active py-2 rounded-xl text-[11px] font-bold text-slate-600 transition">اليومي</button>
+      <button id="tabWeeklyBtn" onclick="switchTab('weekly')" class="tab-btn py-2 rounded-xl text-[11px] font-bold text-slate-600 transition">الأسبوعي</button>
+      <button id="tabMonthlyBtn" onclick="switchTab('monthly')" class="tab-btn py-2 rounded-xl text-[11px] font-bold text-slate-600 transition">الشهري</button>
+      <button id="tabActivitiesBtn" onclick="switchTab('activities')" class="tab-btn py-2 rounded-xl text-[11px] font-bold text-slate-600 transition">الأنشطة</button>
     </div>
 
-    <!-- محتوى التقرير اليومي -->
+    <!-- 1. محتوى التقرير اليومي -->
     <div id="dailyTab" class="space-y-3">
-      <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200">
-        <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
-          <span class="text-xs font-bold text-slate-700">🕒 سجل الوصول</span>
-          <span id="checkInTime" class="text-xs font-semibold text-teal-700"></span>
+      <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200 space-y-3">
+        
+        <!-- وقت الحضور والانصراف جنباً إلى جنب -->
+        <div class="grid grid-cols-2 gap-2">
+          <div class="bg-emerald-50/70 border border-emerald-100 p-3 rounded-2xl text-center">
+            <span class="text-[11px] text-emerald-800 font-bold block mb-0.5">🕒 وقت الحضور</span>
+            <span id="checkInTime" class="text-xs font-extrabold text-emerald-900 font-mono"></span>
+          </div>
+          <div class="bg-amber-50/70 border border-amber-100 p-3 rounded-2xl text-center">
+            <span class="text-[11px] text-amber-800 font-bold block mb-0.5">🚪 وقت الانصراف</span>
+            <span id="checkOutTime" class="text-xs font-extrabold text-amber-900 font-mono"></span>
+          </div>
         </div>
-        <div class="mb-3">
-          <span class="text-xs font-bold text-slate-700 block mb-1">📝 واجب اليوم:</span>
-          <div id="homework" class="text-xs bg-slate-50 p-3 rounded-2xl border border-slate-100 text-slate-700 whitespace-pre-line leading-relaxed"></div>
-        </div>
+
+        <!-- المهام والواجبات المطلوبة -->
         <div>
-          <span class="text-xs font-bold text-slate-700 block mb-1">🌟 ملاحظات اليوم والوجبات:</span>
+          <span class="text-xs font-bold text-slate-700 block mb-1">📝 المهام والواجبات المطلوبة:</span>
+          <div id="tasks" class="text-xs bg-slate-50 p-3 rounded-2xl border border-slate-100 text-slate-700 whitespace-pre-line leading-relaxed"></div>
+        </div>
+
+        <!-- ملاحظات الرعاية والوجبات -->
+        <div>
+          <span class="text-xs font-bold text-slate-700 block mb-1">🌟 تقرير وملاحظات اليوم:</span>
           <p id="dailyNotes" class="text-xs bg-teal-50/50 p-3 rounded-2xl border border-teal-100 text-teal-900 leading-relaxed"></p>
         </div>
       </div>
     </div>
 
-    <!-- محتوى التقرير الأسبوعي -->
+    <!-- 2. محتوى التقرير الأسبوعي -->
     <div id="weeklyTab" class="hidden space-y-3">
       <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200">
         <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
@@ -133,14 +150,31 @@
       </div>
     </div>
 
-    <!-- محتوى التقرير الشهري -->
+    <!-- 3. محتوى التقرير الشهري -->
     <div id="monthlyTab" class="hidden space-y-3">
-      <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200">
-        <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
-          <span class="text-xs font-bold text-slate-700">📊 التقييم الشهري العام</span>
+      <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200 space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+          <span class="text-xs font-bold text-slate-700">📊 إحصائيات الشهر</span>
           <span id="monthTitle" class="text-xs font-semibold text-teal-700"></span>
         </div>
-        <div class="space-y-3">
+
+        <!-- 3 بطاقات إحصائية: أيام الحضور، الغياب، وإجمالي الساعات -->
+        <div class="grid grid-cols-3 gap-2">
+          <div class="bg-emerald-50 border border-emerald-100 p-2.5 rounded-2xl text-center">
+            <span class="text-[10px] text-emerald-700 block mb-0.5">أيام الحضور</span>
+            <span id="monthAttended" class="text-xs font-extrabold text-emerald-900"></span>
+          </div>
+          <div class="bg-rose-50 border border-rose-100 p-2.5 rounded-2xl text-center">
+            <span class="text-[10px] text-rose-700 block mb-0.5">أيام الغياب</span>
+            <span id="monthAbsent" class="text-xs font-extrabold text-rose-900"></span>
+          </div>
+          <div class="bg-sky-50 border border-sky-100 p-2.5 rounded-2xl text-center">
+            <span class="text-[10px] text-sky-700 block mb-0.5">ساعات التواجد</span>
+            <span id="monthHours" class="text-xs font-extrabold text-sky-900"></span>
+          </div>
+        </div>
+
+        <div class="space-y-3 pt-1">
           <div class="flex items-center justify-between bg-slate-50 p-3 rounded-2xl border border-slate-100">
             <span class="text-xs font-bold text-slate-700">التقدير الأكاديمي والمهاري:</span>
             <span id="monthGrade" class="text-xs font-extrabold text-teal-700 bg-teal-100 px-3 py-1 rounded-xl"></span>
@@ -150,27 +184,49 @@
             <p id="monthSocial" class="text-xs bg-slate-50 p-3 rounded-2xl border border-slate-100 text-slate-700 leading-relaxed"></p>
           </div>
           <div>
-            <span class="text-xs font-bold text-slate-700 block mb-1">📋 التقرير الشامل للإدارة:</span>
+            <span class="text-xs font-bold text-slate-700 block mb-1">📋 التقرير الشامل لإدارة الحضانة:</span>
             <p id="monthEvaluation" class="text-xs bg-teal-50/50 p-3 rounded-2xl border border-teal-100 text-teal-900 leading-relaxed"></p>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- 4. محتوى صفحة الأنشطة والفعاليات -->
+    <div id="activitiesTab" class="hidden space-y-3">
+      <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200">
+        <h3 class="text-xs font-bold text-slate-800 mb-3 flex items-center gap-1.5">
+          🎨 الأنشطة المشترك فيها والفعاليات القادمة
+        </h3>
+        <div id="activitiesList" class="space-y-2.5">
+          <!-- تملأ برمجياً عبر الـ JavaScript -->
+        </div>
+      </div>
+    </div>
+
     <!-- زر تسجيل الخروج -->
-    <button onclick="location.reload()" class="w-full mt-4 bg-slate-200 text-slate-600 py-3 rounded-2xl text-xs font-bold hover:bg-slate-300 transition">تسجيل الخروج</button>
+    <button onclick="handleLogout()" class="w-full mt-4 bg-slate-200 text-slate-600 py-3 rounded-2xl text-xs font-bold hover:bg-slate-300 transition">تسجيل الخروج</button>
   </div>
 
   <script>
-    // رابط Google Apps Script الخاص بك
-    const API_URL = "https://script.google.com/macros/s/AKfycbwrzM698S0hIgVLJqkRslNEySjfLX268IlHW0k0y0ot23TgAjAbSE2GV4uUzGIq2tOf/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxz7PLPBoQ3iFQ359ljLk2rIU4PS6vMtx0a2oQeBrPFHN1DzJyyD7LBDSOyhSapnCGA/exec";
 
-    // تفعيل الـ Service Worker لمتطلبات الـ PWA
+    // تفعيل الـ Service Worker لمتطلبات PWA
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js').catch(console.error);
     }
 
-    // التعامل مع تنبيه تثبيت التطبيق على الشاشة الرئيسية
+    // استرجاع بيانات تسجيل الدخول المحفوظة تلقائياً عند فتح الصفحة
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedPhone = localStorage.getItem('sarh_saved_phone');
+      const savedPin = localStorage.getItem('sarh_saved_pin');
+      if (savedPhone && savedPin) {
+        document.getElementById('phone').value = savedPhone;
+        document.getElementById('pin').value = savedPin;
+        document.getElementById('rememberMe').checked = true;
+      }
+    });
+
+    // التعامل مع شريط تثبيت التطبيق
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -189,10 +245,11 @@
       }
     });
 
-    // تسجيل الدخول واستدعاء البيانات
+    // تسجيل الدخول وجلب البيانات
     async function handleLogin() {
       const phone = document.getElementById('phone').value.trim();
       const pin = document.getElementById('pin').value.trim();
+      const rememberMe = document.getElementById('rememberMe').checked;
       const err = document.getElementById('err');
       const btn = document.getElementById('submitBtn');
 
@@ -209,13 +266,9 @@
 
       try {
         const query = `${API_URL}?action=login&phone=${encodeURIComponent(phone)}&pin=${encodeURIComponent(pin)}`;
-        
-        const res = await fetch(query, {
-          method: 'GET',
-          redirect: 'follow'
-        });
-
+        const res = await fetch(query, { method: 'GET', redirect: 'follow' });
         const textData = await res.text();
+        
         let data;
         try {
           data = JSON.parse(textData);
@@ -225,6 +278,15 @@
 
         btn.disabled = false;
         if (data.success) {
+          // حفظ أو حذف بيانات الدخول حسب اختيار المستخدم
+          if (rememberMe) {
+            localStorage.setItem('sarh_saved_phone', phone);
+            localStorage.setItem('sarh_saved_pin', pin);
+          } else {
+            localStorage.removeItem('sarh_saved_phone');
+            localStorage.removeItem('sarh_saved_pin');
+          }
+
           document.getElementById('loginCard').classList.add('hidden');
           document.getElementById('dashboard').classList.remove('hidden');
 
@@ -238,7 +300,6 @@
           const feesCard = document.getElementById('feesCard');
           const feesBadge = document.getElementById('feesBadge');
           const feesDetail = document.getElementById('feesDetail');
-          
           if (data.fees.amount > 0) {
             feesCard.className = "p-4 rounded-3xl mb-3 border bg-rose-50 border-rose-200 text-rose-900";
             feesBadge.className = "text-xs px-2.5 py-1 rounded-lg font-extrabold bg-rose-200 text-rose-800";
@@ -251,22 +312,48 @@
             feesDetail.innerText = "لا توجد أي متأخرات مالية مطلوبة حالياً.";
           }
 
-          // تعبئة بيانات التقرير اليومي
+          // تعبئة التقرير اليومي
           document.getElementById('checkInTime').innerText = data.daily.checkIn;
-          document.getElementById('homework').innerText = data.daily.homework;
+          document.getElementById('checkOutTime').innerText = data.daily.checkOut;
+          document.getElementById('tasks').innerText = data.daily.tasks;
           document.getElementById('dailyNotes').innerText = data.daily.notes;
 
-          // تعبئة بيانات التقرير الأسبوعي
+          // تعبئة التقرير الأسبوعي
           document.getElementById('weekTitle').innerText = data.weekly.week;
           document.getElementById('weekAchievements').innerText = data.weekly.achievements;
           document.getElementById('weekBehavior').innerText = data.weekly.behavior;
           document.getElementById('weekRecommendation').innerText = data.weekly.recommendation;
 
-          // تعبئة بيانات التقرير الشهري
+          // تعبئة التقرير الشهري وإحصائيات الحضور
           document.getElementById('monthTitle').innerText = data.monthly.month;
+          document.getElementById('monthAttended').innerText = data.monthly.attendedDays;
+          document.getElementById('monthAbsent').innerText = data.monthly.absentDays;
+          document.getElementById('monthHours').innerText = data.monthly.totalHours;
           document.getElementById('monthGrade').innerText = data.monthly.grade;
           document.getElementById('monthSocial').innerText = data.monthly.social;
           document.getElementById('monthEvaluation').innerText = data.monthly.evaluation;
+
+          // تعبئة الأنشطة والفعاليات
+          const activitiesContainer = document.getElementById('activitiesList');
+          activitiesContainer.innerHTML = '';
+          if (data.activities && data.activities.length > 0) {
+            data.activities.forEach(act => {
+              const card = document.createElement('div');
+              card.className = "p-3 rounded-2xl border border-slate-100 bg-slate-50 space-y-1";
+              card.innerHTML = `
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-slate-800 text-xs">${act.title}</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded-md font-bold bg-teal-100 text-teal-800">${act.status}</span>
+                </div>
+                <div class="text-[11px] text-teal-700 font-medium">${act.category}</div>
+                <p class="text-[11px] text-slate-600 leading-relaxed">${act.details}</p>
+              `;
+              activitiesContainer.appendChild(card);
+            });
+          } else {
+            activitiesContainer.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">لا توجد أنشطة مسجلة حالياً.</p>';
+          }
+
         } else {
           err.classList.remove('text-teal-600');
           err.classList.add('text-red-500');
@@ -280,15 +367,20 @@
       }
     }
 
-    // التبديل بين التبويبات
+    // التنقل بين التبويبات الأربعة
     function switchTab(tab) {
-      ['daily', 'weekly', 'monthly'].forEach(t => {
+      ['daily', 'weekly', 'monthly', 'activities'].forEach(t => {
         document.getElementById(t + 'Tab').classList.add('hidden');
         document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1) + 'Btn').classList.remove('active');
       });
 
       document.getElementById(tab + 'Tab').classList.remove('hidden');
       document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1) + 'Btn').classList.add('active');
+    }
+
+    // تسجيل الخروج
+    function handleLogout() {
+      location.reload();
     }
   </script>
 </body>
