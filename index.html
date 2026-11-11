@@ -18,23 +18,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- OneSignal Web Push SDK المطور لطلب الإذن وربط الجهاز تلقائياً -->
+  <!-- OneSignal Web Push SDK بدون أي تعارض -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
       await OneSignal.init({
         appId: "5cc519c5-e61a-4666-bd43-088de1bd5828",
-        serviceWorkerParam: { scope: "./" },
-        serviceWorkerPath: "OneSignalSDKWorker.js"
+        allowLocalhostAsSecureOrigin: true
       });
 
-      // طلب الإذن فور فتح الموقع للمستخدم
-      try {
-        await OneSignal.Notifications.requestPermission();
-      } catch (err) {
-        console.log("Notification permission prompt:", err);
-      }
+      // تحديث حالة زر الإشعارات تلقائياً عند تغير حالة الاشتراك
+      OneSignal.User.PushSubscription.addEventListener("change", function(event) {
+        updateNotificationUI();
+      });
     });
   </script>
   
@@ -49,7 +46,7 @@
 </head>
 <body class="bg-[#f8fafc] min-h-screen p-4 flex flex-col items-center justify-center text-slate-800">
 
-  <!-- شريط تثبيت PWA التلقائي -->
+  <!-- شريط تثبيت PWA -->
   <div id="installBanner" class="hidden fixed bottom-4 left-4 right-4 max-w-md mx-auto bg-slate-900 text-white p-3.5 rounded-2xl shadow-xl flex items-center justify-between z-50 border border-slate-800">
     <div class="text-xs">
       <span class="font-bold block">تطبيق حضانة صرح</span>
@@ -58,10 +55,9 @@
     <button id="installBtn" class="bg-indigo-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-indigo-500 transition">تثبيت</button>
   </div>
 
-  <!-- 1. شاشة تسجيل الدخول المطابقة للتصميم -->
+  <!-- 1. شاشة تسجيل الدخول -->
   <div id="loginCard" class="w-full max-w-[420px] flex flex-col items-center my-auto">
     
-    <!-- الشعار والعنوان العلوي -->
     <div class="text-center mb-6">
       <div class="w-20 h-20 mx-auto mb-2 flex items-center justify-center">
         <svg viewBox="0 0 100 100" class="w-16 h-16 drop-shadow-sm">
@@ -76,36 +72,21 @@
       <h2 class="text-xl font-extrabold text-[#232066] tracking-tight">صرح لإدارة الحضانات التعليمية</h2>
     </div>
 
-    <!-- كارت تسجيل الدخول مع الاستيكرات الطافية -->
     <div class="relative w-full bg-white rounded-[32px] p-7 md:p-8 shadow-[0_15px_40px_-15px_rgba(46,41,120,0.12)] border border-slate-100">
       
-      <!-- استيكر القلم (أعلى اليمين) -->
       <div class="absolute -top-3.5 -right-3 w-10 h-10 bg-[#fffbeb] border-2 border-[#fef08a] rounded-2xl flex items-center justify-center text-base shadow-sm rotate-12 select-none pointer-events-none">✏️</div>
-
-      <!-- استيكر القلب الأحمر (أعلى اليسار) -->
       <div class="absolute -top-3.5 -left-3 w-10 h-10 bg-[#fff1f2] border-2 border-[#fecdd3] rounded-full flex items-center justify-center text-sm shadow-sm -rotate-12 select-none pointer-events-none">❤️</div>
-
-      <!-- استيكر النجمة الصفراء (الجانب الأيمن) -->
       <div class="absolute top-[48%] -right-4 w-9 h-9 bg-[#fefce8] border border-[#fef08a] rounded-full flex items-center justify-center text-sm shadow-sm rotate-6 select-none pointer-events-none">⭐</div>
-
-      <!-- استيكر القلم الأزرق (الجانب الأيسر) -->
       <div class="absolute top-[35%] -left-4 w-9 h-9 bg-[#f0f9ff] border border-[#bae6fd] rounded-2xl flex items-center justify-center text-xs shadow-sm -rotate-6 select-none pointer-events-none">🖊️</div>
-
-      <!-- استيكر القلب الأزرق (أسفل اليمين) -->
       <div class="absolute -bottom-3 -right-3 w-9 h-9 bg-[#f0f9ff] border-2 border-[#bae6fd] rounded-full flex items-center justify-center text-xs shadow-sm rotate-12 select-none pointer-events-none">🩵</div>
-
-      <!-- استيكر القلب البرتقالي (أسفل اليسار) -->
       <div class="absolute -bottom-3 -left-3 w-9 h-9 bg-[#fff7ed] border-2 border-[#fed7aa] rounded-full flex items-center justify-center text-xs shadow-sm -rotate-12 select-none pointer-events-none">🧡</div>
 
-      <!-- ترحيب -->
       <div class="text-center mb-6">
         <h1 class="text-2xl font-black text-[#1e1b4b] mb-1.5">يرجى تسجيل الدخول للمتابعة</h1>
         <p class="text-xs font-semibold text-slate-400">ادخل بيانات حسابك اسم المستخدم وكلمة المرور</p>
       </div>
 
-      <!-- حقول الإدخال -->
       <div class="space-y-4">
-        
         <div>
           <label class="block text-xs font-bold text-slate-700 mb-1.5 text-right">رقم هاتف ولي الأمر أو الحساب</label>
           <div class="relative flex items-center bg-[#f8fafc] border border-slate-200/90 rounded-2xl focus-within:border-indigo-600 focus-within:bg-white transition-all">
@@ -156,7 +137,6 @@
         </button>
 
         <p id="err" class="text-rose-500 text-xs font-bold text-center mt-2 hidden"></p>
-
       </div>
     </div>
 
@@ -172,6 +152,17 @@
 
   <!-- 2. لوحة متابعة الطفل بعد تسجيل الدخول -->
   <div id="dashboard" class="hidden w-full max-w-md pb-8">
+
+    <!-- زر تفعيل وحالة الإشعارات الفورية (يحل مشكلة الـ Push Token نهائياً) -->
+    <div id="notifBox" class="mb-3 p-3.5 rounded-3xl border bg-indigo-50 border-indigo-200 flex items-center justify-between gap-2 transition-all">
+      <div class="text-xs">
+        <span id="notifTitle" class="font-extrabold text-indigo-950 block">🔔 إشعارات الحضور والانصراف</span>
+        <span id="notifDesc" class="text-[11px] text-indigo-700">فعّل الإشعارات ليصلك تنبيه فوري لحظة وصول طفلك</span>
+      </div>
+      <button id="notifBtn" onclick="activatePushNotifications()" class="bg-indigo-600 text-white px-3.5 py-2 rounded-2xl text-xs font-extrabold shadow-sm hover:bg-indigo-500 shrink-0 active:scale-95 transition">
+        تفعيل الآن
+      </button>
+    </div>
     
     <!-- بطاقة الطالب -->
     <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-200 mb-3">
@@ -320,19 +311,60 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbx5Mcl87FAOf4ngrTgpiga3QAUMphmnRFI9EJ6h2TyPUGkpFlkZP87Fm-wzAVdojUts/exec";
-
-    // تفعيل Service Worker العام
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(console.error);
-    }
+    const API_URL = "https://script.google.com/macros/s/AKfycbwrzM698S0hIgVLJqkRslNEySjfLX268IlHW0k0y0ot23TgAjAbSE2GV4uUzGIq2tOf/exec";
+    let currentChildId = null;
 
     function togglePasswordVisibility() {
       const pinInput = document.getElementById('pin');
       pinInput.type = pinInput.type === 'password' ? 'text' : 'password';
     }
 
-    // استرجاع بيانات تسجيل الدخول المحفوظة تلقائياً
+    // دالة تفعيل الإشعارات المباشرة عند ضغط ولي الأمر على الزر
+    async function activatePushNotifications() {
+      const btn = document.getElementById('notifBtn');
+      btn.innerText = "جاري التفعيل...";
+      
+      if (window.OneSignalDeferred) {
+        window.OneSignalDeferred.push(async function(OneSignal) {
+          try {
+            await OneSignal.Notifications.requestPermission();
+            await OneSignal.User.PushSubscription.optIn();
+            if (currentChildId) {
+              await OneSignal.login("child_" + currentChildId);
+            }
+            setTimeout(updateNotificationUI, 1000);
+          } catch (e) {
+            console.error("Push activation error:", e);
+            btn.innerText = "إعادة المحاولة";
+          }
+        });
+      }
+    }
+
+    // دالة تحديث شكل شريط الإشعارات حسب حالة الهاتف
+    function updateNotificationUI() {
+      if (!window.OneSignalDeferred) return;
+      window.OneSignalDeferred.push(function(OneSignal) {
+        const isSubscribed = OneSignal.User?.PushSubscription?.optedIn && OneSignal.Notifications?.permission;
+        const box = document.getElementById('notifBox');
+        const title = document.getElementById('notifTitle');
+        const desc = document.getElementById('notifDesc');
+        const btn = document.getElementById('notifBtn');
+
+        if (isSubscribed) {
+          box.className = "mb-3 p-3.5 rounded-3xl border bg-emerald-50 border-emerald-200 flex items-center justify-between gap-2 transition-all";
+          title.className = "font-extrabold text-emerald-950 block";
+          title.innerText = "✅ إشعارات الهاتف مفعلة بنجاح";
+          desc.className = "text-[11px] text-emerald-700";
+          desc.innerText = "سيصلك تنبيه صوتي تلقائياً فور تسجيل حضور أو انصراف طفلك";
+          btn.classList.add('hidden');
+        } else {
+          btn.innerText = "تفعيل الآن";
+          btn.classList.remove('hidden');
+        }
+      });
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       const savedPhone = localStorage.getItem('sarh_saved_phone');
       const savedPin = localStorage.getItem('sarh_saved_pin');
@@ -361,7 +393,6 @@
       }
     });
 
-    // تنفيذ تسجيل الدخول
     async function handleLogin() {
       const phone = document.getElementById('phone').value.trim();
       const pin = document.getElementById('pin').value.trim();
@@ -394,15 +425,14 @@
 
         btn.disabled = false;
         if (data.success) {
-          
-// ربط هاتف ولي الأمر وتوليد الـ Push Token فوراً عند الضغط
+          currentChildId = String(data.child.id).trim();
+
+          // ربط معرف الطفل وفحص حالة الإشعارات
           if (window.OneSignalDeferred) {
             window.OneSignalDeferred.push(async function(OneSignal) {
               try {
-                // طلب الإذن وتوليد التوكن كإجراء ناتج عن ضغطة المستخدم
-                await OneSignal.Notifications.requestPermission();
-                await OneSignal.login("child_" + String(data.child.id).trim());
-                await OneSignal.User.PushSubscription.optIn();
+                await OneSignal.login("child_" + currentChildId);
+                updateNotificationUI();
               } catch (pushErr) {
                 console.warn("OneSignal Login Error:", pushErr);
               }
@@ -420,13 +450,11 @@
           document.getElementById('loginCard').classList.add('hidden');
           document.getElementById('dashboard').classList.remove('hidden');
 
-          // تعبئة بطاقة الطالب
           document.getElementById('childName').innerText = data.child.name;
           document.getElementById('childCode').innerText = "#" + data.child.id;
           document.getElementById('parentPhone').innerText = data.child.phone;
           document.getElementById('childStatus').innerText = data.daily.status;
 
-          // تهيئة بطاقة المصروفات
           const feesCard = document.getElementById('feesCard');
           const feesBadge = document.getElementById('feesBadge');
           const feesDetail = document.getElementById('feesDetail');
@@ -442,19 +470,16 @@
             feesDetail.innerText = "لا توجد أي متأخرات مالية مطلوبة حالياً.";
           }
 
-          // تعبئة التقرير اليومي
           document.getElementById('checkInTime').innerText = data.daily.checkIn;
           document.getElementById('checkOutTime').innerText = data.daily.checkOut;
           document.getElementById('tasks').innerText = data.daily.tasks;
           document.getElementById('dailyNotes').innerText = data.daily.notes;
 
-          // تعبئة التقرير الأسبوعي
           document.getElementById('weekTitle').innerText = data.weekly.week;
           document.getElementById('weekAchievements').innerText = data.weekly.achievements;
           document.getElementById('weekBehavior').innerText = data.weekly.behavior;
           document.getElementById('weekRecommendation').innerText = data.weekly.recommendation;
 
-          // تعبئة التقرير الشهري وإحصائيات الحضور
           document.getElementById('monthTitle').innerText = data.monthly.month;
           document.getElementById('monthAttended').innerText = data.monthly.attendedDays;
           document.getElementById('monthAbsent').innerText = data.monthly.absentDays;
@@ -463,7 +488,6 @@
           document.getElementById('monthSocial').innerText = data.monthly.social;
           document.getElementById('monthEvaluation').innerText = data.monthly.evaluation;
 
-          // تعبئة الأنشطة والفعاليات
           const activitiesContainer = document.getElementById('activitiesList');
           activitiesContainer.innerHTML = '';
           if (data.activities && data.activities.length > 0) {
