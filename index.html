@@ -18,20 +18,27 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- OneSignal Web Push SDK بدون أي تعارض -->
+  <!-- OneSignal Web Push SDK مضبوط لمجلدات GitHub Pages -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({
-        appId: "5cc519c5-e61a-4666-bd43-088de1bd5828",
-        allowLocalhostAsSecureOrigin: true
-      });
+      try {
+        await OneSignal.init({
+          appId: "5cc519c5-e61a-4666-bd43-088de1bd5828",
+          serviceWorkerParam: { scope: "./" },
+          serviceWorkerPath: "OneSignalSDKWorker.js",
+          allowLocalhostAsSecureOrigin: true
+        });
 
-      // تحديث حالة زر الإشعارات تلقائياً عند تغير حالة الاشتراك
-      OneSignal.User.PushSubscription.addEventListener("change", function(event) {
-        updateNotificationUI();
-      });
+        OneSignal.User.PushSubscription.addEventListener("change", function() {
+          updateNotificationUI();
+        });
+      } catch (initErr) {
+        console.error("OneSignal Init Error:", initErr);
+        const desc = document.getElementById('notifDesc');
+        if (desc) desc.innerText = "تنبيه الإعداد: " + (initErr.message || initErr);
+      }
     });
   </script>
   
@@ -153,11 +160,11 @@
   <!-- 2. لوحة متابعة الطفل بعد تسجيل الدخول -->
   <div id="dashboard" class="hidden w-full max-w-md pb-8">
 
-    <!-- زر تفعيل وحالة الإشعارات الفورية (يحل مشكلة الـ Push Token نهائياً) -->
+    <!-- صندوق تفعيل وفحص الإشعارات الفورية -->
     <div id="notifBox" class="mb-3 p-3.5 rounded-3xl border bg-indigo-50 border-indigo-200 flex items-center justify-between gap-2 transition-all">
       <div class="text-xs">
         <span id="notifTitle" class="font-extrabold text-indigo-950 block">🔔 إشعارات الحضور والانصراف</span>
-        <span id="notifDesc" class="text-[11px] text-indigo-700">فعّل الإشعارات ليصلك تنبيه فوري لحظة وصول طفلك</span>
+        <span id="notifDesc" class="text-[11px] text-indigo-700">اضغط على الزر لتفعيل استلام الإشعارات على هذا الجهاز</span>
       </div>
       <button id="notifBtn" onclick="activatePushNotifications()" class="bg-indigo-600 text-white px-3.5 py-2 rounded-2xl text-xs font-extrabold shadow-sm hover:bg-indigo-500 shrink-0 active:scale-95 transition">
         تفعيل الآن
@@ -319,10 +326,17 @@
       pinInput.type = pinInput.type === 'password' ? 'text' : 'password';
     }
 
-    // دالة تفعيل الإشعارات المباشرة عند ضغط ولي الأمر على الزر
+    // تفعيل الإشعارات وعرض التشخيص المباشر على الشاشة
     async function activatePushNotifications() {
       const btn = document.getElementById('notifBtn');
+      const desc = document.getElementById('notifDesc');
       btn.innerText = "جاري التفعيل...";
+
+      if (Notification.permission === "denied") {
+        desc.innerText = "⚠️ الإشعارات محظورة من المتصفح! اضغط على علامة القفل بجانب الرابط واختر سماح (Allow).";
+        btn.innerText = "محظور";
+        return;
+      }
       
       if (window.OneSignalDeferred) {
         window.OneSignalDeferred.push(async function(OneSignal) {
@@ -332,35 +346,41 @@
             if (currentChildId) {
               await OneSignal.login("child_" + currentChildId);
             }
-            setTimeout(updateNotificationUI, 1000);
+            setTimeout(updateNotificationUI, 1500);
           } catch (e) {
-            console.error("Push activation error:", e);
+            desc.innerText = "خطأ أثناء التفعيل: " + (e.message || e);
             btn.innerText = "إعادة المحاولة";
           }
         });
       }
     }
 
-    // دالة تحديث شكل شريط الإشعارات حسب حالة الهاتف
+    // تحديث الواجهة والتحقق من توليد الـ Push Token فعلياً
     function updateNotificationUI() {
       if (!window.OneSignalDeferred) return;
       window.OneSignalDeferred.push(function(OneSignal) {
-        const isSubscribed = OneSignal.User?.PushSubscription?.optedIn && OneSignal.Notifications?.permission;
+        const subId = OneSignal.User?.PushSubscription?.id;
+        const token = OneSignal.User?.PushSubscription?.token;
+        const optedIn = OneSignal.User?.PushSubscription?.optedIn;
+
         const box = document.getElementById('notifBox');
         const title = document.getElementById('notifTitle');
         const desc = document.getElementById('notifDesc');
         const btn = document.getElementById('notifBtn');
 
-        if (isSubscribed) {
+        if (optedIn && token) {
           box.className = "mb-3 p-3.5 rounded-3xl border bg-emerald-50 border-emerald-200 flex items-center justify-between gap-2 transition-all";
           title.className = "font-extrabold text-emerald-950 block";
-          title.innerText = "✅ إشعارات الهاتف مفعلة بنجاح";
+          title.innerText = "✅ إشعارات الهاتف مفعلة ومتصلة";
           desc.className = "text-[11px] text-emerald-700";
-          desc.innerText = "سيصلك تنبيه صوتي تلقائياً فور تسجيل حضور أو انصراف طفلك";
+          desc.innerText = `متصل بنجاح (كود الطفل: child_${currentChildId})`;
           btn.classList.add('hidden');
         } else {
           btn.innerText = "تفعيل الآن";
           btn.classList.remove('hidden');
+          if (Notification.permission === "denied") {
+            desc.innerText = "⚠️ الإشعارات محظورة من إعدادات المتصفح أعلى الشاشة.";
+          }
         }
       });
     }
@@ -427,7 +447,6 @@
         if (data.success) {
           currentChildId = String(data.child.id).trim();
 
-          // ربط معرف الطفل وفحص حالة الإشعارات
           if (window.OneSignalDeferred) {
             window.OneSignalDeferred.push(async function(OneSignal) {
               try {
